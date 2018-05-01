@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1000/xhtml">
+<head th:replace="common/header :: common-header" />
+
+<body>
+	<div th:replace="common/header :: navbar" />
+
+	<div class="container">
+		<div class="row" style="margin-bottom: -100px;">
+			<div class="col-xs-8">
+				<h2 class="section-headline">
+					<h2 class="section-headline">
+						<span th:text="${#strings.toUpperCase(user.username)}"></span>
+					</h2>
+				</h2>
+			</div>
+			<div class="col-xs-4">
+				<img src="/image/logo.png" class="img-responsive" />
+			</div>
+		</div>
+		<hr
+			style="position: absolute; width: 100%; height: 6px; background-color: #333; z-index: -1; margin-top: -80px;" />
+		<img class="img-responsive" src="/image/wood.png"
+			style="margin-top: -75px;" />
+
+		<div class="row" style="margin-top: 60px;">
+			<div class="col-xs-9 col-xs-offset-3">
+
+				<!-- Nav tabs -->
+				<ul class="nav nav-tabs">
+					<li th:classappend="${classActiveEdit}? 'active'"><a
+						href="#tab-1" data-toggle="tab"><span style="color: red;">Изменить</span></a></li>
+					<li th:classappend="${classActiveOrders}? 'active'"><a
+						href="#tab-2" data-toggle="tab"><span style="color: red;">Заказы</span></a></li>
+					<li th:classappend="${classActiveBilling}? 'active'"><a
+						href="#tab-3" data-toggle="tab"><span style="color: red;">Выручка</span></a></li>
+					<li th:classappend="${classActiveShipping}? 'active'"><a
+						href="#tab-4" data-toggle="tab"><span style="color: red;">Перевозка</span></a></li>
+				</ul>
+
+				<!-- Tab panels -->
+				<div class="tab-content">
+
+					<!-- Edit user information -->
+					<div class="tab-pane fade" id="tab-1"
+						th:classappend="${classActiveEdit}? 'in active'">
+						<div class="panel-group">
+							<div class="panel panel-default" style="border: none;">
+								<div class="panel-body"
+									style="background-color: #ededed; margin-top: 20px;">
+
+									<div class="alert alert-danger" th:if="${incorrectPassword}">
+										<strong>Неверный пароль!</strong> Введите правильный пароль для текущего пользователя.
+									</div>
+
+									<div class="alert alert-succss" th:if="${updateSuccess}">
+										<strong>Успешно обновлено!</strong>
+									</div>
+
+									<form th:action="@{/updateUserInfo}" method="post">
+										<input type="hidden" name="id" th:value="${user.id}" />
+
+										<div class="bg-info" th:if="${updateUserInfo}">Информация о пользователе
+											обновлено.</div>
+
+										<div class="form-group">
+											<div class="row">
+												<div class="col-xs-6">
+													<label for="firstName">Имя</label> <input
+														type="text" class="form-control" id="firstName"
+														name="firstName" th:value="${user.firstName}" />
+												</div>
+												<div class="col-xs-6">
+													<label for="lastName">Ыамилия</label> <input type="text"
+														class="form-control" id="lastName" name="lastName"
+														th:value="${user.lastName}" />
+												</div>
+											</div>
+										</div>
+
+										<div class="form-group">
+											<label for="userName">Пользователь</label> ' <input type="text"
+												class="form-control" id="userName" name="username"
+												th:value="${user.username}" />
+										</div>
+										<div class="form-group">
+											<label for="currentPassword">текущий пароль</label> ' <input
+												type="password" class="form-control" id="currentPassword"
+												name="password" th:value="${currentPassword}" />
+										</div>
+										<p style="color: #828282">Введите текущий пароль и
+											измените адрес электронной почты или пароль.</p>
+
+										<div class="form-group">
+											<label for="email">* Email</label> ' <input
+												type="text" class="form-control" id="email" name="email"
+												th:value="${user.email}" />
+										</div>
+										<p style="color: #828282">Действительный адрес электронной почты. Все
+											электронные письма из системы будут отправлены по этому адресу.
+											адрес электронной почты не публикуется и будет использоваться только в том случае, если вы
+											хотите получить новый пароль или хотите получить определенные
+											уведомление.</p>
+
+										<div class="form-group">
+											<label for="txtNewPassword">Пароль</label>&nbsp;<span
+												id="checkPasswordMatch" style="color: red;"></span> <input
+												type="password" class="form-control" id="txtNewPassword"
+												name="newPassword" />
+										</div>
+
+										<div class="form-group">
+											<label for="txtConfirmPassword">Подтвердите Пароль</label> ' <input
+												type="password" class="form-control" id="txtConfirmPassword" />
+										</div>
+										<p style="color: #828282">Чтобы изменить текущего пользователя
+											пароль, введите новый пароль в оба поля.</p>
+
+										<button id="updateUserInfoButton" type="submit"
+											class="btn btn-primary">Save All</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Order Information -->
+					<div class="tab-pane fade" id="tab-2"
+						th:classappend="${classActiveOrders}? 'in active'">
+						<div class="panel-group">
+							<div class="panel panel-default" style="border: none;">
+								<div class="panel-body"
+									style="background-color: #ededed; margin-top: 20px;">
+
+									<table class="table table-sm table-inverse">
+										<thead>
+											<tr>
+												<th>Дата заказа</th>
+												<th>Номер заказа</th>
+												<th>Всего</th>
+												<th>Статус</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="order : ${orderList}">
+												<td><a th:href="@{/orderDetail(id=${order.id})}"><span
+														th:text="${order.orderDate}"></span></a></td>
+												<td data-th-text="${order.id}"></td>
+												<td data-th-text="${order.orderTotal}"></td>
+												<td data-th-text="${order.orderStatus}"></td>
+											</tr>
+										</tbody>
+									</table>
+
+									<div th:if="${displayOrderDetail}">
+										<div class="row">
+											<div class="col-xs-12">
+												<div class="text-center">
+													<h2>
+														Детали заказа для покупки #<span th:text="${order.id}"></span>
+													</h2>
+												</div>
+												<hr />
+
+												<div class="row">
+													<div class="col-xs-4">
+														<div class="panel panel-default height">
+															<div class="panel-heading">
+																<strong>Платежные реквизиты</strong>
+															</div>
+															<div class="panel-body">
+																<span
+																	th:text="${order.billingAddress.billingAddressName}"></span><br />
+																<span
+																	th:text="${order.billingAddress.billingAddressStreet1}+' '+${order.billingAddress.billingAddressStreet2}"></span><br />
+																<span
+																	th:text="${order.billingAddress.billingAddressCity}"></span><br />
+																<span
+																	th:text="${order.billingAddress.billingAddressState}"></span><br />
+																<span
+																	th:text="${order.billingAddress.billingAddressZipcode}"></span><br />
+															</div>
+														</div>
+													</div>
+													<div class="col-xs-4">
+														<div class="panel panel-default height">
+															<div class="panel-heading">
+																<strong>Платежная информация</strong>
+															</div>
+															<div class="panel-body">
+																<span th:text="${order.payment.holderName}">Имя
+																	Карты</span><br /> <span th:text="${order.payment.cardNumber}">Номер
+																	Карты</span><br /> <span>Годен до:</span><span
+																	th:text="${order.payment.expiryMonth}"></span>/<span
+																	th:text="${order.payment.expiryYear}"></span><br />
+															</div>
+														</div>
+													</div>
+													<div class="col-xs-4">
+														<div class="panel panel-default height">
+															<div class="panel-heading">
+																<strong>Платежные реквизиты</strong>
+															</div>
+															<div class="panel-body">
+																<span
+																	th:text="${order.shippingAddress.shippingAddressName}"></span><br />
+																<span
+																	th:text="${order.shippingAddress.shippingAddressStreet1}+' '+${order.shippingAddress.shippingAddressStreet2}"></span><br />
+																<span
+																	th:text="${order.shippingAddress.shippingAddressCity}"></span><br />
+																<span
+																	th:text="${order.shippingAddress.shippingAddressState}"></span><br />
+																<span
+																	th:text="${order.shippingAddress.shippingAddressZipcode}"></span><br />
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="row">
+											<div class="col-md-12">
+												<div class="panel-heading">
+													<h3 class="text-center">
+														<strong>итог заказа</strong>
+													</h3>
+												</div>
+												<div class="panel-body">
+													<div class="table-responsive">
+														<table class="table table-condensed">
+															<thead>
+																<tr>
+																	<td><strong>Название предмета</strong></td>
+																	<td class="text-center"><strong>Цена</strong></td>
+																	<td class="text-center"><strong>Количество товара</strong></td>
+																	<td class="text-right"><strong>Всего</strong></td>
+																</tr>
+															</thead>
+															<tbody>
+																<tr th:each="cartItem : ${cartItemList}">
+																	<td data-th-text="${cartItem.book.title}"></td>
+																	<td class="text-center"
+																		data-th-text="${cartItem.book.ourPrice}"></td>
+																	<td class="text-center" data-th-text="${cartItem.qty}"></td>
+																	<td class="text-center"
+																		data-th-text="${cartItem.subtotal}"></td>
+																</tr>
+																<tr>
+																	<td class="highrow"></td>
+																	<td class="highrow"></td>
+																	<td class="highrow text-center"><strong>Промежуточный итог</strong></td>
+																	<td class="highrow text-right"
+																		data-th-text="${order.orderTotal}"></td>
+																</tr>
+																<tr>
+																	<td class="emptyrow"></td>
+																	<td class="emptyrow"></td>
+																	<td class="emptyrow text-center"><strong>Налог</strong></td>
+																	<td class="emptyrow text-right"
+																		data-th-text="${#numbers.formatDecimal(order.orderTotal*0.06,0,2)}"></td>
+																</tr>
+																<tr>
+																	<td class="emptyrow"><i
+																		class="fa fa-barcode iconbig"></i></td>
+																	<td class="emptyrow"></td>
+																	<td class="emptyrow text-center"><strong>Итог</strong></td>
+																	<td
+																		th:with="total=${order.orderTotal+order.orderTotal*0.06}"
+																		data-th-text="${#numbers.formatDecimal(total, 0, 2)}"
+																		class="emptyrow text-right"></td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Billing Information -->
+					<div class="tab-pane fade" id="tab-3"
+						th:classappend="${classActiveBilling}? 'in active'">
+						<div class="panel-group">
+							<div class="panel panel-default" style="border: none;">
+								<div class="panel-body"
+									style="background-color: #ededed; margin-top: 20px;">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item active"><a
+											th:href="@{/listOfCreditCards}"
+											th:style="${listOfCreditCards}? 'color:red'">Список
+											Кредитные карты</a></li>
+										<li class="breadcrumb-item active"><a
+											th:href="@{/addNewCreditCard}"
+											th:style="${addNewCreditCard}? 'color:red'">Добавление(Обговление)
+											Кредитной карты</a></li>
+									</ol>
+
+									<div th:if="${listOfCreditCards}">
+										<form th:action="@{/setDefaultPayment}" method="post">
+											<table class="table">
+												<thead>
+													<tr>
+														<th></th>
+														<th>Кредитная карта</th>
+														<th>Операции</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr th:each="userPayment : ${userPaymentList}">
+														<td><input type="radio" name="defaultUserPaymentId"
+															th:value="${userPayment.id}"
+															th:checked="${userPayment.defaultPayment}" /></td>
+														<td th:text="${userPayment.cardName}"></td>
+														<td><a
+															th:href="@{/updateCreditCard(id=${userPayment.id})}"><i
+																class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a
+															th:href="@{/removeCreditCard(id=${userPayment.id})}"><i
+																class="fa fa-times"></i></a></td>
+													</tr>
+												</tbody>
+											</table>
+											<button class="btn btn-primary" type="submit">Сохранить</button>
+										</form>
+									</div>
+
+									<div th:if="${addNewCreditCard}">
+										<form th:action="@{addNewCreditCard}" method="post">
+											<div class="bg-info" th:if="${updateUserPaymentInfo}">Информация о пользователе обновлена.</div>
+
+											<input hidden="hidden" name="id" th:value="${userPayment.id}" />
+
+											<div class="form-group">
+												<h5>* Дайте название своей карте:</h5>
+												<input type="text" class="form-control" id="cardName"
+													placeholder="Имя Карты" th:name="cardName"
+													required="required" th:value="${userPayment.cardName}" />
+											</div>
+
+											<!-- Billing Address -->
+											<hr />
+											<div class="form-group">
+												<h4>Платежный адрес</h4>
+											</div>
+											<div class="form-group">
+												<label for="billingName">* Имя</label> <input type="text"
+													class="form-control" id="billingName"
+													placeholder="Имя получателя" th:name="userBillingName"
+													required="required"
+													th:value="${userBilling.userBillingName}" />
+											</div>
+											<div class="form-group">
+												<label for="billingAddress">* Улица</label> <input
+													type="text" class="form-control" id="billingAddress"
+													placeholder="Улица 1" th:name="userBillingStreet1"
+													required="required"
+													th:value="${userBilling.userBillingStreet1}" /> <input
+													type="text" class="form-control" id="billingAddress"
+													placeholder="Улица 2" th:name="userBillingStreet2"
+													th:value="${userBilling.userBillingStreet2}" />
+											</div>
+
+											<div class="row">
+												<div class="col-xs-4">
+													<div class="form-group">
+														<label for="billingCity">* Город</label> <input type="text"
+															class="form-control" id="billingCity"
+															placeholder="Город" th:name="userBillingCity"
+															required="required"
+															th:value="${userBilling.userBillingCity}" />
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="form-group">
+														<label for="billingState">* Область</label> <select
+															id="billingState" class="form-control"
+															th:name="userBillingState"
+															th:value="${userBilling.userBillingState}"
+															required="required">
+															<option value="" disabled="disabled">Выберите</option>
+															<option th:each="state : ${stateList}" th:text="${state}"
+																th:selected="(${userBilling.userBillingState}==${state})"></option>
+														</select>
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="form-group">
+														<label for="billingZipcode">* Почтовый индекс</label> <input
+															type="text" class="form-control" id="billingZipcode"
+															placeholder="Billing Zipcode"
+															th:name="userBillingZipcode" required="required"
+															th:value="${userBilling.userBillingZipcode}" />
+													</div>
+												</div>
+											</div>
+
+											<!-- Credit Card Information -->
+											<hr />
+											<div class="form-group">
+												<h4>Информация о кредитной карте</h4>
+											</div>
+											<div class="row">
+												<div class="col-xs-12">
+													<img src="/image/creditcard.png" class="img-responsive" /><br />
+													<div class="form-group">
+														<label for="cardType">* Выберите тип карты:</label> <select
+															class="form-control" id="cardType" th:name="type"
+															th:value="${userPayment.type}">
+															<option value="visa">Visa</option>
+															<option value="mastercard">Mastercard</option>
+															<option value="discover">Discover</option>
+															<option value="amex">American Express</option>
+														</select>
+													</div>
+													<div class="form-group">
+														<label for="cardHolder">* Имя владельца карты:</label> <input
+															type="text" class="form-control" id="cardHolder"
+															required="required" placeHolder="Имя владельца карты"
+															th:name="holderName" th:value="${userPayment.holderName}" />
+													</div>
+													<div class="form-group">
+														<label for="cardNumber">* Номер карты:</label>
+														<div class="input-group">
+															<input type="tel" class="form-control" id="cardNumber"
+																required="required" placeHolder="действительный номер карты"
+																th:name="cardNumber"
+																th:value="${userPayment.cardNumber}" /> <span
+																class="input-group-addon"><i
+																class="fa fa-credit-card" aria-hidden="true"></i></span>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-xs-7">
+													<div class="form-group">
+														<label>* Срок годности</label>
+														<div class="row">
+															<div class="col-xs-6">
+																<select class="form-control" name="expiryMonth"
+																	required="required"
+																	th:value="${userPayment.expiryMonth}">
+																	<option disabled="disabled">-- Month --</option>
+																	<option value="01">Jan (01)</option>
+																	<option value="02">Feb (02)</option>
+																	<option value="03">Mar (03)</option>
+																	<option value="04">Apr (04)</option>
+																	<option value="05">May (05)</option>
+																	<option value="06">June (06)</option>
+																	<option value="07">July (07)</option>
+																	<option value="08">Aug (08)</option>
+																	<option value="09">Sep (09)</option>
+																	<option value="10">Oct (10)</option>
+																	<option value="11">Nov (11)</option>
+																	<option value="12">Dec (12)</option>
+																</select>
+															</div>
+															<div class="col-xs-6">
+																<select class="form-control" name="expiryYear"
+																	th:value="${userPayment.expiryYear}">
+																	<option disabled="disabled">-- Year --</option>
+																	<option value="2017">2017</option>
+																	<option value="2018">2018</option>
+																	<option value="19">2019</option>
+																	<option value="20">2020</option>
+																	<option value="21">2021</option>
+																	<option value="22">2022</option>
+																	<option value="23">2023</option>
+																	<option value="23">2024</option>
+																	<option value="23">2025</option>
+																	<option value="23">2026</option>
+																	<option value="23">2027</option>
+																	<option value="23">2028</option>
+																	<option value="23">2029</option>
+																</select>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="col-xs-5">
+													<div class="form-group">
+														<label for="cardCVC">Код CV</label> <input id="cardCVC"
+															type="tel" class="form-control" name="cvc"
+															placeholder="CVС" th:name="cvc"
+															th:value="${userPayment.cvc}" />
+													</div>
+												</div>
+											</div>
+											<hr />
+											<button type="submit" class="btn btn-primary btn-lg">Сохранить все</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Shipping Information -->
+					<div class="tab-pane fade" id="tab-4"
+						th:classappend="${classActiveShipping}? 'in active'">
+						<div class="panel-group">
+							<div class="panel panel-default" style="border: none;">
+								<div class="panel-body"
+									style="background-color: #ededed; margin-top: 20px;">
+
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item active"><a
+											th:href="@{/listOfShippingAddresses}"
+											th:style="${listOfShippingAddresses}? 'color:red'">Список
+											Адреса доставки</a></li>
+										<li class="breadcrumb-item active"><a
+											th:href="@{/addNewShippingAddress}"
+											th:style="${addNewShippingAddress}? 'color:red'">Добавить (Обновить)
+											Адрес доставки</a></li>
+									</ol>
+
+									<div th:if="${listOfShippingAddresses}">
+										<form th:action="@{/setDefaultShippingAddress}" method="post">
+											<table class="table">
+												<thead>
+													<tr>
+														<th></th>
+														<th>Адрес доставки</th>
+														<th>Операции</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr th:each="userShipping : ${userShippingList}">
+														<td><input type="radio"
+															name="defaultShippingAddressId"
+															th:value="${userShipping.id}"
+															th:checked="${userShipping.userShippingDefault}" /><span></span></td>
+														<td
+															th:text="${userShipping.userShippingStreet1}+', '+
+														${userShipping.userShippingCity}+', '+${userShipping.userShippingState}"></td>
+														<td><a
+															th:href="@{/updateUserShipping(id=${userShipping.id})}"><i
+																class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a
+															th:href="@{/removeUserShipping(id=${userShipping.id})}"><i
+																class="fa fa-times"></i></a></td>
+													</tr>
+												</tbody>
+											</table>
+											<button class="btn btn-primary" type="submit">Сохранить</button>
+										</form>
+									</div>
+
+									<div th:if="${addNewShippingAddress}">
+										<form th:action="@{/addNewShippingAddress}" method="post">
+											<div class="bg-info" th:if="${updateUserShippingInfo}">Информация о пользователе обновлена.</div>
+
+											<input hidden="hidden" name="id"
+												th:value="${userShipping.id}" />
+
+											<!-- Shipping Address -->
+											<hr />
+											<div class="form-group">
+												<h4>Адрес доставки</h4>
+											</div>
+											<div class="form-group">
+												<label for="shippingName">* Name</label> <input type="text"
+													class="form-control" id="shippingName"
+													placeholder="Имя получателя" th:name="userShippingName"
+													required="required"
+													th:value="${userShipping.userShippingName}" />
+											</div>
+											<div class="form-group">
+												<label for="shippingAddress">* Улица</label> <input
+													type="text" class="form-control" id="shippingAddress"
+													placeholder="Улица 1"
+													th:name="userShippingStreet1" required="required"
+													th:value="${userShipping.userShippingStreet1}" /> <input
+													type="text" class="form-control"
+													placeholder="Улица 2" th:name="userShppingStreet2"
+													th:value="${userShipping.userShippingStreet2}" />
+											</div>
+
+											<div class="row">
+												<div class="col-xs-4">
+													<div class="form-group">
+														<label for="shippingCity">* Город</label> <input
+															type="text" class="form-control" id="shippingCity"
+															placeholder="Город" th:name="userShippingCity"
+															required="required"
+															th:value="${userShipping.userShippingCity}" />
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="form-group">
+														<label for="shippingState">* Область</label> <select
+															id="shippingState" class="form-control"
+															th:name="userShippingState"
+															th:value="${userShipping.userShippingState}"
+															required="required">
+															<option value="" disabled="disabled">Please
+																select an option</option>
+															<option th:each="state : ${stateList}" th:text="${state}"
+																th:selected="(${userShipping.userShippingState}==${state})"></option>
+														</select>
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="form-group">
+														<label for="shippingZipcode">* Почтовый индекс</label> <input
+															type="text" class="form-control" id="shippingZipcode"
+															placeholder="Почтовый индекс"
+															th:name="userShippingZipcode" required="required"
+															th:value="${userShipping.userShippingZipcode}" />
+													</div>
+												</div>
+											</div>
+
+											<hr />
+											<button type="submit" class="btn btn-primary btn-lg">Сохранить все</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end of container -->
+<div th:replace="common/header :: footer"/>
+
+	<div th:replace="common/header :: body-bottom-scripts" />
+</body>
+</html>

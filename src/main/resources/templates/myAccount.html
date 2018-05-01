@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1000/xhtml">
+<head th:replace="common/header :: common-header" />
+
+<body>
+	<div th:replace="common/header :: navbar" />
+
+	<div class="container">
+		<div class="row" style="margin-bottom: -100px;">
+			<div class="col-xs-8">
+				<h2 class="section-headline">
+					<span>Учетная Запись Пользователя</span>
+				</h2>
+			</div>
+		</div>
+		<hr
+			style="position: absolute; width: 100%; height: 6px; background-color: #333; z-index: -1; margin-top: -80px;" />
+		<img class="img-responsive" src="/image/wood.png"
+			style="margin-top: -75px;" />
+
+		<div class="row" style="margin-top: 60px;">
+			<div class="col-xs-9 col-xs-offset-3">
+
+				<!-- Nav tabs -->
+				<ul class="nav nav-tabs">
+					<li th:classappend="${classActiveNewAccount}? 'active'"><a
+						href="#tab-1" data-toggle="tab"><span style="color: red;">Создать новый аккаунт</span></a></li>
+					<li th:classappend="${classActiveLogin}? 'active'"><a
+						href="#tab-2" data-toggle="tab"><span style="color: red;">Вход</span></a></li>
+					<li th:classappend="${classActiveForgetPassword}? 'active'"><a
+						href="#tab-3" data-toggle="tab"><span style="color: red;">Забыл пароль?</span></a></li>
+				</ul>
+
+				<!-- Tab panels -->
+				<div class="tab-content">
+
+					<!-- create new user pane -->
+					<div class="tab-pane fade" id="tab-1"
+						th:classappend="${classActiveNewAccount}? 'in active'">
+						<div class="panel-group">
+							<div class="panel panel-default" style="border: none;">
+								<div class="panel-body"
+									style="background-color: #ededed; margin-top: 20px;">
+									<div class="alert alert-info" th:if="${emailSent}">отправлен на указанный вами адрес электронной почты был отроавлен смс.
+										Пожалуйста, подтвердите свой адрес электронной почты и обновите свой пароль.</div>
+									<form th:action="@{/newUser}" method="post">
+										<div class="form-group">
+											<label for="newUsername">* Пользовательe: </label>&nbsp;<span
+												style="color: red;" th:if="${usernameExists}">имя пользователя
+                                                уже существует. Выберите другой.</span> <input
+												required="required" type="text" class="form-control"
+												id="newUsername" name="username" />
+											<p style="color: #828282">введите свое имя пользователя здесь.</p>
+										</div>
+
+										<div class="form-group">
+											<label for="email">* Email: </label><span
+												style="color: red;" th:if="${emailExists}">Эл. адрес
+											уже существует. Выберите другой.</span> <input
+												required="required" type="text" class="form-control"
+												id="email" name="email" />
+											<p style="color: #828282">Действительный адрес электронной почты. Все
+												электронные письма из системы будут отправлены по этому адресу.
+												адрес электронной почты не будет опубликован и будет использоваться только в том случае, если
+												вы хотите получить новый пароль или хотите получить
+												определенное уведомление.</p>
+										</div>
+
+										<button type="submit" class="btn btn-primary">Создать новый аккаунт.</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- log in -->
+					<div class="tab-pane fade" id="tab-2"
+						th:classappend="${classActiveLogin}? 'in active'">
+						<div class="panel-group">
+							<div class="panel panel-default" style="border: none;">
+								<div class="panel-body"
+									style="background-color: #ededed; margin-top: 20px;">
+									<div th:if="${param.error != null}" style="color:red;">Неверное имя пользователя или пароль.</div>
+									<form th:action="@{/login}" method="post">
+										<div class="form-group">
+											<label for="username">* Пользователь: </label> <input
+												required="required" type="text" class="form-control"
+												id="username" name="username" />
+											<p style="color: #828282">Введите свое имя пользователя здесь.</p>
+										</div>
+
+										<div class="form-group">
+											<label for="password">* Пароль: </label> <input
+												required="required" type="password" class="form-control"
+												id="password" name="password" />
+											<p style="color: #828282">Введите пароль, который
+												сопровождает ваше имя пользователя</p>
+										</div>
+
+										<button type="submit" class="btn btn-primary">Вход</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- forget password -->
+					<div class="tab-pane fade" id="tab-3"
+						th:classappend="${classActiveForgetPassword}? 'in active'">
+						<div class="panel-group">
+							<div class="panel panel-default" style="
+							border: none;">
+								<div class="panel-body"
+									style="background-color: #ededed; margin-top: 20px;">
+									<div th:if="${emailNotExist}" class="alert alert-danger">Электронная почта не существует.</div>
+									<div th:if="${forgetPasswordEmailSent}" class="alert alert-success">Письмо отправлено.</div>
+									<form th:action="@{/forgetPassword}" method="post">
+										<div class="form-group">
+											<label for="recoverEmail">*  Email: </label> <input
+												required="required" type="text" class="form-control"
+												id="recoverEmail" name="email" />
+											<p style="color: #828282">Введите зарегистрированный адрес электронной почты
+												адрес здесь.</p>
+										</div>
+
+										<button type="submit" class="btn btn-primary">Отправить</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end of container -->
+<div th:replace="common/header :: footer"/>
+
+	<div th:replace="common/header :: body-bottom-scripts" />
+</body>
+</html>
